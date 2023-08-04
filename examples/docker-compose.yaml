@@ -20,7 +20,7 @@ services:
     restart: unless-stopped
 
   proxy-gate:
-    image: ghcr.io/digimach/proxy-gate:0.3.0
+    image: ghcr.io/digimach/proxy-gate:${BUILD_VERSION}
     volumes:
       - ./runtime-proxy-gate-data/:/data
     restart: unless-stopped
