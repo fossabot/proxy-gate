@@ -1,0 +1,15 @@
+FROM python:3.9
+
+# Set the working directory in the container
+WORKDIR /build
+
+# Copy the requirements file to the container
+COPY requirements.txt .
+COPY requirements-test.txt .
+
+# Install the Python dependencies
+RUN pip install --upgrade pip \
+    && pip install --no-cache-dir -r requirements.txt \
+    && pip install --no-cache-dir -r requirements-test.txt
+
+
