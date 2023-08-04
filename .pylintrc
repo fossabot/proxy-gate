@@ -1,0 +1,2 @@
+[FORMAT]
+max-line-length=88 # In line with the black formatter
