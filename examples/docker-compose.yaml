@@ -1,0 +1,26 @@
+---
+version: "3"
+services:
+  nginx:
+    image: lscr.io/linuxserver/nginx:latest
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/New_York
+    volumes:
+      - ./runtime-nginx-config/:/config
+      - ./nginx/site-confs/proxy-gate-backend.conf:/config/nginx/site-confs/proxy-gate-backend.conf:ro
+      - ./nginx/site-confs/proxy-gate.conf:/config/nginx/site-confs/proxy-gate.conf:ro
+      - ./nginx/site-confs/sample-plex-auth.conf:/config/nginx/site-confs/sample-plex-auth.conf:ro
+    ports:
+      - 80:80
+      - 443:443
+      - 8080:8080 # proxy gate accessible via nginx
+      - 444:444
+    restart: unless-stopped
+
+  proxy-gate:
+    image: ghcr.io/digimach/proxy-gate:0.3.0
+    volumes:
+      - ./runtime-proxy-gate-data/:/data
+    restart: unless-stopped
