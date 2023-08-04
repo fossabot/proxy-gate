@@ -1,0 +1,10 @@
+{
+    "recommendations": [
+        "ms-python.flake8",
+        "ms-python.black-formatter",
+        "ms-python.isort",
+        "ms-python.python",
+        "ms-vscode.live-server",
+        "esbenp.prettier-vscode"
+    ]
+}
