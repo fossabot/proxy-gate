@@ -10,14 +10,9 @@ class SecretKey(db.Model):
     active = db.Column(db.Boolean, nullable=False)
     inactive_since = db.Column(db.DateTime, nullable=True)
 
-    def __repr__(self):
-        return f"<secret_key {self.secret_key}>"
-
 
 class RunTime(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     key = db.Column(db.String(), unique=True, nullable=False)
     value = db.Column(JSON, nullable=False)
 
-    def __repr__(self):
-        return f"<value {self.value}>"
