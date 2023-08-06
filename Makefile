@@ -13,5 +13,6 @@ push: build
 	echo $$GITHUB_TOKEN | docker login $(DOCKER_REPO) --username USERNAME --password-stdin
 	docker push $(DOCKER_IMAGE_URL):$(BUILD_VERSION)
 
-
-
+clean: docker-clean
+	@echo "Cleaning up..."
+	git clean -d --force -X
