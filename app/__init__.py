@@ -22,16 +22,11 @@ def init_app():
     with app.app_context():
         load_user_config(app)
         database_setup(app)
-        from .utils import load_trusted_emails
-
-        load_trusted_emails(db)
 
         add_routes(app)
         app.secret_key = get_session_secret_keys(db)
         csrf.init_app(app)
-        app.wsgi_app = ProxyFix(
-            app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_port=1
-        )
+        app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_port=1)
         add_healthz_routes(app)
         return app
 
@@ -58,6 +53,7 @@ def load_user_config(app):
 
 def database_setup(app):
     db.init_app(app)
+    from .models import RunTime, SecretKey
     db.create_all()
 
 
