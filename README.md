@@ -6,6 +6,8 @@
 
 Proxy Gate adds authentication and access controls to apps using Nginx as a proxy frontend. It enables seamless external authentication, allowing you to enhance your apps' security by adding authentication and authorization checks.
 
+It can act as a Single Sign-On (SSO) solution for multiple applications.
+
 ## Workflow
 
 ![enter image description here](./assets/proxy-gate-high-level-workflow.svg)
