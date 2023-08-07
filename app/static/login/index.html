@@ -1,0 +1,168 @@
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="" />
+    <meta
+      name="author"
+      content="Mark Otto, Jacob Thornton, and Bootstrap contributors"
+    />
+    <meta name="generator" content="Hugo 0.104.2" />
+
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9"
+      crossorigin="anonymous"
+    />
+
+    <!-- Favicons -->
+    <link
+      rel="apple-touch-icon"
+      href="/docs/5.2/assets/img/favicons/apple-touch-icon.png"
+      sizes="180x180"
+    />
+    <link
+      rel="icon"
+      href="/docs/5.2/assets/img/favicons/favicon-32x32.png"
+      sizes="32x32"
+      type="image/png"
+    />
+    <link
+      rel="icon"
+      href="/docs/5.2/assets/img/favicons/favicon-16x16.png"
+      sizes="16x16"
+      type="image/png"
+    />
+    <link rel="manifest" href="/docs/5.2/assets/img/favicons/manifest.json" />
+    <link
+      rel="mask-icon"
+      href="/docs/5.2/assets/img/favicons/safari-pinned-tab.svg"
+      color="#712cf9"
+    />
+    <link rel="icon" href="/docs/5.2/assets/img/favicons/favicon.ico" />
+    <meta name="theme-color" content="#712cf9" />
+
+    <!-- Custom styles for this template -->
+    <link href="css/main.css" rel="stylesheet" />
+  </head>
+  <body class="text-center">
+    <div
+      class="container-fluid d-flex align-items-center justify-content-center vh-100"
+    >
+      <div class="rounded-lg p-4 container-signin w-100 m-auto">
+        <div id="forbiddenCard" class="card text-bg-danger" hidden>
+          <div class="card-header">
+            <h5 class="card-title">Access Denied</h5>
+          </div>
+          <div class="card-body">
+            <p id="forbiddenCardText" class="card-text"></p>
+          </div>
+        </div>
+        <main class="form-signin w-100 m-auto">
+          <!-- <form> -->
+          <img
+            id="brandingLogo"
+            class="mb-4"
+            src="images/proxy-gate-logo.svg"
+            alt=""
+            width="auto"
+            height="auto"
+          />
+          <div id="dynamicContent">
+            <h1 id="containerTitle" , class="h3 mb-3 fw-normal" hidden="true">
+              the title goes here
+            </h1>
+            <div id="divProcessing">
+              <div id="processingSpinner" class="d-flex justify-content-center">
+                <div
+                  class="spinner-border"
+                  style="width: 5rem; height: 5rem; margin: 20px"
+                  role="status"
+                >
+                  <span class="visually-hidden">Processing...</span>
+                </div>
+              </div>
+            </div>
+            <div id="divAuthButtons" hidden="true">
+              <button
+                id="authWithGoogleButton"
+                class="w-100 btn btn-lg btn-primary btn-google text-wrap"
+                hidden="true"
+              >
+                <div class="text-wrap fs-md" style="width: auto">
+                  <img
+                    src="images/icons/google-logo-signin-btn.svg"
+                    alt="Google Logo"
+                    class="img-fluid mx-auto btn-signin-logo"
+                  />
+                  Continue with Google
+                </div>
+              </button>
+              <button
+                id="authWithPlexButton"
+                class="w-100 btn btn-lg btn-primary btn-plex text-wrap"
+                hidden="true"
+              >
+                <div class="text-wrap fs-md" style="width: auto">
+                  <img
+                    src="images/icons/plex-logo-signin-btn.svg"
+                    alt="Plex Logo"
+                    class="img-fluid mx-auto btn-signin-logo"
+                  />
+                  Continue with Plex
+                </div>
+              </button>
+              <button
+                id="authWithFacebookButton"
+                class="w-100 btn btn-lg btn-primary btn-facebook text-wrap"
+                hidden="true"
+              >
+                <div class="text-wrap fs-md" style="width: auto">
+                  <img
+                    src="images/icons/facebook-logo-signin-btn.svg"
+                    alt="Facebook Logo"
+                    class="img-fluid mx-auto btn-signin-logo"
+                  />
+                  Continue with Facebook
+                </div>
+              </button>
+              <button
+                id="authWithAppleButton"
+                class="w-100 btn btn-lg btn-primary btn-apple text-wrap"
+                hidden="true"
+              >
+                <div class="text-wrap fs-md" style="width: auto">
+                  <img
+                    src="images/icons/apple-logo-signin-btn.svg"
+                    alt="Apple Logo"
+                    class="img-fluid mx-auto btn-signin-logo"
+                  />
+                  Continue with Apple
+                </div>
+              </button>
+            </div>
+            <div id="divError" hidden="true">
+              <div class="card text-bg-danger mb-3" style="max-width: 18rem">
+                <div class="card-header">
+                  <h6 id="errorCardTitle" class="card-title"></h6>
+                </div>
+                <div class="card-body">
+                  <p id="errorCardText" class="card-text"></p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <p id="versionFooter" class="mt-1 mb-1 text-muted"></p>
+        </main>
+      </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/UAParser.js/1.0.35/ua-parser.min.js"></script>
+    <script type="module" src="js/main.js"></script>
+    <script type="module" src="js/branding.js"></script>
+    <script type="module" src="js/utils.js"></script>
+    <script type="module" src="js/auth.js"></script>
+    <script type="module" src="js/auth/plex.js"></script>
+  </body>
+</html>
