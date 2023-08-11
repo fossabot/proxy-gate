@@ -21,27 +21,14 @@ gsi.workflowSetup = function workflowSetup() {
     return;
   }
 
-  function handleCredentialResponse(response) {
-    console.log("Encoded JWT ID token: " + response.credential);
-  }
   window.onload = function () {
     google.accounts.id.initialize({
       client_id: googleClientId,
+      auto_select: true,
       callback: gsi.workflowStepCallback,
+    //   context: "signin",
+      ux_mode: "redirect",
     });
-    google.accounts.id.renderButton(
-      // style="width: auto" class="w-100 btn btn-lg btn-primary btn-google text-wrap fs-md"
-      document.getElementById("authWithGoogleButton"),
-      { theme: "outline", size: "large", text: "continue_with", width: "300", shape: "rectangular" } // customization attributes
-    );
-
-    // document.getElementById("authWithGoogleButton").classList.add("w-100");
-    // document.getElementById("authWithGoogleButton").classList.add("btn");
-    // document.getElementById("authWithGoogleButton").classList.add("btn-lg");
-    // document.getElementById("authWithGoogleButton").classList.add("btn-primary");
-    // document.getElementById("authWithGoogleButton").classList.add("fs-md");
-    // only do the id prompt if method is google todo later
-    // google.accounts.id.prompt(); // also display the One Tap dialog
   };
 };
 
@@ -54,14 +41,15 @@ gsi.workflowStepStart = function workflowStepStart(buttonId) {
   google.accounts.id.prompt((notification) => {
     console.log(notification);
     if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
-      document.cookie = `g_state=;path=/;expires=Thu, 01 Jan 1970 00:00:01 GMT`;
-      gsi.workflowStepStart(buttonId);
+        document.cookie =  `g_state=;path=/;expires=Thu, 01 Jan 1970 00:00:01 GMT`;
+        gsi.workflowStepStart(buttonId);
     }
+    
   });
 };
 
 gsi.workflowStepCallback = function workflowStepCallback(CredentialResponse) {
-  console.log(CredentialResponse);
-};
+    console.log(CredentialResponse)
+  };
 
 export default gsi;
