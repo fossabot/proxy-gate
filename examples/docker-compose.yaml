@@ -26,6 +26,7 @@ services:
       - ./nginx/site-confs/proxy-gate-backend.conf:/config/nginx/site-confs/proxy-gate-backend.conf:ro
       - ./nginx/site-confs/proxy-gate.conf:/config/nginx/site-confs/proxy-gate.conf:ro
       - ./nginx/site-confs/sample-plex-auth.conf:/config/nginx/site-confs/sample-plex-auth.conf:ro
+      - ./nginx/site-confs/sample-google-auth.conf:/config/nginx/site-confs/sample-google-auth.conf:ro
     ports:
       - 80:80
       - 443:443
