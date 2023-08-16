@@ -2,27 +2,11 @@ import auth from "./auth.js";
 import utils from "./utils.js";
 import branding from "./branding.js";
 
-function loadJSFile(filename) {
-  return new Promise((resolve, reject) => {
-    const script = document.createElement("script");
-    script.src = filename;
-    script.onload = resolve;
-    script.onerror = reject;
-    document.head.appendChild(script);
-  });
-}
-
-async function loadJSFiles(filenames) {
-  filenames.forEach((filename) => {
-    loadJSFile(filename)
-      .then(() => console.log(`${filename} loaded successfully.`))
-      .catch((error) => console.error(`Failed to load ${filename}.`, error));
-  });
-}
-
 function pageSetup() {
+  console.log("Running page setup");
   branding.main();
   utils.resetDynamicContent();
+  console.log("Completed running page setup");
 }
 
 function workflowCallback() {
@@ -43,6 +27,7 @@ function workflowCallback() {
 }
 
 function workflowStart(redirectParam, forbidden = false) {
+  console.log("Running workflow start");
   utils.resetDynamicContent();
 
   let redirectHostname = "the given resource";
@@ -65,31 +50,40 @@ function workflowStart(redirectParam, forbidden = false) {
   let divAuthButtons = document.getElementById("divAuthButtons");
   divAuthButtons.hidden = false;
   auth.setup();
+  console.log("Completed running workflow start");
 }
 
-const urlSearchParams = new URLSearchParams(window.location.search);
-const workflowStep = urlSearchParams.get("workflowStep") || "start";
-document.addEventListener("DOMContentLoaded", pageSetup);
+function main() {
+  console.log("Running main");
+  const urlSearchParams = new URLSearchParams(window.location.search);
+  const workflowStep = urlSearchParams.get("workflowStep") || "start";
+  pageSetup();
 
-if (workflowStep == "start" || workflowStep == "forbidden") {
-  const redirectParam = urlSearchParams.get("redirect");
-  if (workflowStep == "forbidden") {
-    document.addEventListener(
-      "DOMContentLoaded",
-      workflowStart.bind(null, redirectParam, true)
-    );
+  if (workflowStep == "start" || workflowStep == "forbidden") {
+    const redirectParam = urlSearchParams.get("redirect");
+    if (workflowStep == "forbidden") {
+      workflowStart(redirectParam, true);
+    } else {
+      workflowStart(redirectParam, false);
+    }
+  } else if (workflowStep == "callback") {
+    workflowCallback();
   } else {
-    document.addEventListener(
-      "DOMContentLoaded",
-      workflowStart.bind(null, redirectParam, false)
-    );
-  }
-} else if (workflowStep == "callback") {
-  document.addEventListener("DOMContentLoaded", workflowCallback);
-} else {
-  document.addEventListener("DOMContentLoaded", function () {
     const error = new Error("Invalid workflow step specified.");
     utils.showError(error);
+
+    console.error("Invalid workflow step specified.");
+  }
+  console.log("Completed running main");
+}
+
+if (document.readyState !== "loading") {
+  console.log("document is already ready, executing main");
+  main();
+} else {
+  console.log("document was not ready, adding event");
+  document.addEventListener("DOMContentLoaded", function () {
+    console.log("DOMContentLoaded event fired");
+    main();
   });
-  console.error("Invalid workflow step specified.");
 }
