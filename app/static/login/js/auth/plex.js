@@ -1,6 +1,8 @@
 import utils from "../utils.js";
 const plex = {};
 
+plex.workflowSetup = function workflowSetup() {};
+
 plex.workflowStepStart = function workflowStepStart(buttonId) {
   const urlSearchParams = new URLSearchParams(window.location.search);
   const authWithPlexButton = document.getElementById(buttonId);
@@ -46,12 +48,12 @@ plex.workflowStepCallback = function workflowStepCallback() {
         })
         .catch((error) => {
           console.error("getProxyGateSession API call failed:", error);
+          utils.showError(error);
         });
     })
     .catch((error) => {
       console.error("getPlexToken API call failed:", error);
       utils.showError(error);
-      // Optionally, you can show an error message to the user here
     });
 };
 

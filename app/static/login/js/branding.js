@@ -13,8 +13,8 @@ branding.setAppVer = function setAppVer(version) {
 
 branding.main = function main() {
   console.log("Performing branding operations.");
-  const appName = utils.getValueFromHeader("X-App-Name", "ProxyGate");
-  const appVer = utils.getValueFromHeader("X-App-Version", "0.0.0");
+  const appName = utils.proxyGateMetaz.hasOwnProperty("app_name") ? utils.proxyGateMetaz["app_name"] : "Proxy Gate";
+  const appVer = utils.proxyGateMetaz.hasOwnProperty("version") ? utils.proxyGateMetaz["version"] : "0.0.0";
   branding.setPageTitle(`${appName} - Login`);
   branding.setAppVer(appVer);
   console.log("Completed performing branding operations.");

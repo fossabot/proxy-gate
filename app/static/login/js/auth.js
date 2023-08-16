@@ -5,13 +5,6 @@ import plex from "./auth/plex.js";
 
 const auth = {};
 
-const methodsObj = {
-  apple: apple,
-  facebook: facebook,
-  google: google,
-  plex: plex,
-};
-
 auth.methods = {
   apple: apple,
   facebook: facebook,
@@ -35,16 +28,19 @@ auth.setup = function setup() {
   }
 
   methods.forEach((method) => {
+    console.log(`Setting up auth with ${method}`);
     const elementId =
       "authWith" + method.charAt(0).toUpperCase() + method.slice(1) + "Button";
     const authButton = document.getElementById(elementId);
     if (authButton) {
       authButton.hidden = false;
+      auth.methods[method].workflowSetup();
       authButton.addEventListener(
         "click",
         auth.methods[method].workflowStepStart.bind(null, elementId)
       );
     }
+    console.log(`Completed setting up auth with ${method}`);
   });
   console.log("Completed doing auth setup");
 };
