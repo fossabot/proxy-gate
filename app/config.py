@@ -27,7 +27,8 @@ class ProxyGateConfig:
         if self.config_file is not None and self.config_file.exists():
             with open(self.config_file, "r") as file:
                 config_file_data = yaml.safe_load(file)
-            self.config.update(config_file_data)
+            if config_file_data is not None:
+                self.config.update(config_file_data)
         self._load_calculated()
 
     def _load_calculated(self):
