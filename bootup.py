@@ -44,8 +44,10 @@ def secret_key_setup():
         active_key = active_keys[0]
         if datetime.now() > active_key.created_on + timedelta(hours=key_validity):
             print(
-                ("Active key is expired, creating a new one and marking the old one as"
-                 " rotated.")
+                (
+                    "Active key is expired, creating a new one and marking the old one as"
+                    " rotated."
+                )
             )
             active_key.active = False
             active_key.inactive_since = datetime.now()
