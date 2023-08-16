@@ -1,4 +1,4 @@
-from flask import Blueprint, abort, request, send_from_directory
+from flask import Blueprint, abort, request, send_from_directory, make_response
 
 login = Blueprint("login", __name__)
 
@@ -12,9 +12,7 @@ def login_page(path):
         if workflow in ["start", "forbidden"]:
             return login_workflow("Proxy Gate", request, workflow, ["redirect"])
         elif workflow == "callback":
-            return login_workflow(
-                "Proxy Gate", request, workflow, ["redirect", "method"]
-            )
+            return login_workflow("Proxy Gate", request, workflow, ["method"])
 
     return send_from_directory("static/login", path)
 
@@ -24,8 +22,10 @@ def login_workflow(app_name, request, workflow_step, required_args=[]):
         _arg = request.args.get(required_arg)
         if _arg is None:
             return "invalid request", 400
-
-    return send_from_directory("static/login", "index.html")
+    response = make_response(send_from_directory("static/login", "index.html"))
+    response.headers["X-Proxy-Gate-Google-Client-Id"] = "1234"
+    response.headers["X-App-Version"] = "09125"
+    return response
 
 
 def _check_workflow_step(workflow_step_arg):
