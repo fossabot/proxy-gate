@@ -15,4 +15,3 @@ class RunTime(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     key = db.Column(db.String(), unique=True, nullable=False)
     value = db.Column(JSON, nullable=False)
-

@@ -114,7 +114,7 @@ def test_session_success(app):
         assert isinstance(decoded_cookie["plex_resource_client_ids"], list)
         assert "2fa-enabled" in decoded_cookie
         assert "email" in decoded_cookie
-    
+
     assert "localhost" in cookie_domains
     assert "foo.localhost" in cookie_domains
 

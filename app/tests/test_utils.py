@@ -48,4 +48,3 @@ def test_generate_secure_cookie(app):
             r"Signature validation failed for cookie: Signature b'\S+' does not match",
             str(exc_info.value),
         )
-
