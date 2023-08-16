@@ -10,7 +10,6 @@ pytest: build-image-test
 build: build-image-app build-image-test
 push: build
 	@echo "Pushing the Docker image to container registry..."
-	echo $$GITHUB_TOKEN | docker login $(DOCKER_REPO) --username USERNAME --password-stdin
 	docker push $(DOCKER_IMAGE_URL):$(BUILD_VERSION)
 
 clean: docker-clean
