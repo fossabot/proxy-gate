@@ -21,11 +21,9 @@ def check():
     """
     Perform authentication and authorization checks given the conditions.
 
-    if verifiedEmail is provided, then we allow unverified emails to access the resource
     if emailIn is provided, then we check if the user has an email address that is in
         the emailIn. Multiple values can be provided in csv format.
     """
-    verified_email = request.args.get("verifiedEmail", default=True, type=bool)
     email_in = request.args.get("emailIn", type=str)
 
     try:
@@ -35,12 +33,7 @@ def check():
     except (CookieNotFound, BadCookieSignature):
         return "authentication required", 401
 
-    if (
-        verified_email is True
-        and google_auth_user_session.get("verifiedEmail", False) is False
-    ):
-        return "access denied", 403
-    elif email_in is not None and google_auth_user_session.get(
+    if email_in is not None and google_auth_user_session.get(
         "email", None
     ) not in email_in.split(","):
         return "access denied", 403
@@ -70,6 +63,8 @@ def get_session():
         return "invalid token", 400
     elif http_status_code != 200:
         return "unknown error", 500
+    elif google_user_info.get("verified_email", False) is False:
+        return "unverified email", 403
 
     cookie_domains = [request.host]
     print(f"**** {request.host}")
