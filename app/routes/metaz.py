@@ -11,6 +11,6 @@ def index():
         "name": "Proxy Gate",
         "googleAuth": {
             "clientId": "1234",
-        }
+        },
     }
     return meta, 200
