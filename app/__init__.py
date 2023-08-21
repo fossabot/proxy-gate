@@ -11,7 +11,6 @@ from werkzeug.middleware.proxy_fix import ProxyFix
 from .config import ProxyGateConfig
 
 db = SQLAlchemy()
-proxy_gate_config = ProxyGateConfig()
 csrf = CSRFProtect()
 
 
