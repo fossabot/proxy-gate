@@ -10,7 +10,10 @@ from pathlib import Path
 from flask_migrate import Migrate, init, migrate, upgrade
 from sqlalchemy import and_
 
+from app.config import ProxyGateConfig
+from app.exceptions import GoogleClientSecretFileNotFound
 from app.models import RunTime, SecretKey
+from app.utils import google_oauth_flow
 from wsgi import app, db
 
 
@@ -22,8 +25,8 @@ def secret_key_setup():
     """
 
     print("** Setup secret key")
-    key_validity = int(os.environ["PROXY_GATE_SECRET_KEY_VALIDITY"])
-    key_interim_validity = int(os.environ["PROXY_GATE_SECRET_KEY_INTERIM_VALIDITY"])
+    key_validity = ProxyGateConfig()("secret_key_validity")
+    key_interim_validity = ProxyGateConfig()("secret_key_interim_validity")
     active_keys = SecretKey.query.filter(SecretKey.active).all()
 
     if len(active_keys) == 0:
@@ -87,8 +90,37 @@ def runtime_data_setup():
     Data is newly created on each bootup.
     """
     db.session.query(RunTime).delete()
-    db.session.add(RunTime(key="boottime", value=datetime.now().isoformat()))
+    db.session.add(RunTime(key="boot_time", value=datetime.now().isoformat()))
+    try:
+        google_credentials = google_oauth_flow.init_flow_credentials()
+        db.session.add(RunTime(key="google_credentials", value=google_credentials))
+    except GoogleClientSecretFileNotFound:
+        print("** Google client secret file not found")
     db.session.commit()
+
+
+def dir_setup():
+    print("** Seting up directories")
+    os.makedirs(os.environ["PROXY_GATE_DATA_DIR"], exist_ok=True)
+    os.makedirs(os.environ["PROXY_GATE_CONFIG_DIR"], exist_ok=True)
+
+
+def config_file_setup():
+    print("** Copying config files if needed")
+    config_files = ["flask-config.yml", "proxy-gate-config.yml", "gunicorn.conf.py"]
+
+    for config_file in config_files:
+        destination_path = os.path.join(
+            os.environ["PROXY_GATE_CONFIG_DIR"], config_file
+        )
+        if not os.path.isfile(destination_path):
+            print(f"Copying default {config_file}")
+            source_path = os.path.join("examples", config_file)
+            shutil.copy(source_path, destination_path)
+        else:
+            print(
+                f"Config file {config_file} already exists in {destination_path}, skipping copy"
+            )
 
 
 def main():
@@ -96,6 +128,8 @@ def main():
     Main function
     """
     print("** Booting up")
+    dir_setup()
+    config_file_setup()
     print("** Running migrations")
     migrate_engine = Migrate()
 
