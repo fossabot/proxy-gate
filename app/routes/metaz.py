@@ -1,10 +1,9 @@
 from flask import Blueprint
 
-metaz = Blueprint("metaz", __name__)
+blueprint = Blueprint(__name__.replace(".", "_"), __name__)
 
-
-@metaz.route("")
-@metaz.route("/")
+@blueprint.route("")
+@blueprint.route("/")
 def index():
     meta = {
         "version": "0.1.0",

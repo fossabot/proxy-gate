@@ -3,20 +3,20 @@
 from datetime import timedelta
 from urllib.parse import urlparse
 
-from flask import Blueprint, Response, make_response, request, session
+from flask import Blueprint, Response, make_response, request
 
-from ..exceptions import BadCookieSignature, CookieNotFound
-from ..utils import (
+from ...exceptions import BadCookieSignature, CookieNotFound
+from ...utils import (
     base64_url_decode,
     generate_secure_cookie,
     get_user_session,
     google_get_user_info,
 )
 
-googleauth = Blueprint("googleauth", __name__)
+blueprint = Blueprint(__name__.replace('.', '_'), __name__)
 
 
-@googleauth.route("/check")
+@blueprint.route("/check")
 def check():
     """
     Perform authentication and authorization checks given the conditions.
@@ -43,7 +43,7 @@ def check():
         return "access ok", 200
 
 
-@googleauth.route("/session")
+@blueprint.route("/session")
 def get_session():
     google_access_token = request.args.get("googleAccessToken")
     redirect_arg = request.args.get("redirect")
@@ -91,12 +91,12 @@ def create_user_auth_session(
     cookie_data["verified_email"] = google_user_info["verified_email"]
     cookie_data["email"] = google_user_info["email"]
 
-    googleauth_cookie = generate_secure_cookie(cookie_data, salt="googleauth")
+    google_auth_cookie = generate_secure_cookie(cookie_data, salt="googleauth")
 
     for domain in domains:
         response.set_cookie(
             "_googleauth",
-            googleauth_cookie,
+            google_auth_cookie,
             max_age=timedelta(days=180),
             domain=domain,
             secure=True,
