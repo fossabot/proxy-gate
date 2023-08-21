@@ -37,7 +37,9 @@ def test_check_with_email_id(app):
         "email": "foo@example.com",
     }
     with app.app_context():
-        google_auth_cookie = generate_secure_cookie(google_auth_cookie, salt="googleauth")
+        google_auth_cookie = generate_secure_cookie(
+            google_auth_cookie, salt="googleauth"
+        )
 
     client.set_cookie("_googleauth", google_auth_cookie)
     response = client.get("/googleauth/check?emailIn=foo@example.com,fee@nono.com")
