@@ -8,4 +8,4 @@ def test_index(app):
     response_json = response.json
 
     assert "version" in response_json
-    assert "name" in response_json
+    assert "app_name" in response_json
