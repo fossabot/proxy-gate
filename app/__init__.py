@@ -11,7 +11,6 @@ from werkzeug.middleware.proxy_fix import ProxyFix
 from .config import ProxyGateConfig
 
 db = SQLAlchemy()
-proxy_gate_config = ProxyGateConfig()
 csrf = CSRFProtect()
 
 
@@ -32,10 +31,12 @@ def init_app():
 
 
 def add_routes(app):
-    from .routes import login, plexauth
+    from .routes import googleauth, login, metaz, plexauth
 
     app.register_blueprint(plexauth.plexauth, url_prefix="/plexauth")
+    app.register_blueprint(googleauth.googleauth, url_prefix="/googleauth")
     app.register_blueprint(login.login, url_prefix="/login")
+    app.register_blueprint(metaz.metaz, url_prefix="/metaz")
 
 
 def load_user_config(app):
@@ -54,6 +55,7 @@ def load_user_config(app):
 def database_setup(app):
     db.init_app(app)
     from .models import RunTime, SecretKey
+
     db.create_all()
 
 

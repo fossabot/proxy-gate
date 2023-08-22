@@ -104,4 +104,43 @@ utils.checkURLDoesNotRequireAuth = async function checkURLDoesNotRequireAuth(
   }
 };
 
+utils.getProxyGateMetaz = async function getProxyGateMetaz() {
+  const { protocol, host } = window.location;
+  const apiUrl = `${protocol}//${host}/metaz`;
+  try {
+    // Make the API call using fetch()
+    const response = await fetch(apiUrl, {
+      method: "get",
+    });
+
+    // Check if the response was successful (status code 200-299)
+    if (!response.ok) {
+      throw new Error("Proxy Gate get metaz response was not ok");
+    }
+
+    const jsonData = await response.json();
+    return jsonData;
+  } catch (error) {
+    console.error("Error fetching data:", error);
+    return false;
+  }
+}
+
+utils.proxyGateMetaz = await utils.getProxyGateMetaz();
+
+utils.base64UrlEncode = function base64UrlEncode(input) {
+  const base64 = btoa(input);
+  return base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+}
+
+utils.base64UrlDecode = function base64UrlDecode(input) {
+  // Add padding characters if needed (length % 4 !== 0)
+  while (input.length % 4 !== 0) {
+    input += '=';
+  }
+  
+  const base64 = input.replace(/-/g, '+').replace(/_/g, '/');
+  return atob(base64);
+}
+
 export default utils;

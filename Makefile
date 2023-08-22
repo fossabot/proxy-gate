@@ -1,5 +1,5 @@
 include makefiles/*.mk
-.PHONY: pytest build push run 
+.PHONY: pytest build push clean integration-test 
 
 pytest: build-image-test
 	@echo "Running tests..."

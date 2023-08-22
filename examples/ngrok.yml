@@ -1,0 +1,15 @@
+---
+version: 2
+tunnels:
+  app-behind-google:
+    proto: http
+    addr: nginx:443
+    schemes: 
+      - https
+    host_header: app-behind-google.localhost
+  auth-app-behind-google:
+    proto: http
+    addr: nginx:443
+    schemes: 
+      - https
+    host_header: auth.app-behind-google

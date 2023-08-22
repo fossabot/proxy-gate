@@ -1,8 +1,10 @@
+import base64
+
 import requests
 from flask import current_app, request
 from itsdangerous import BadSignature, URLSafeTimedSerializer
 
-from app.exceptions import CookieNotFound, BadCookieSignature
+from app.exceptions import BadCookieSignature, CookieNotFound
 
 
 def generate_secure_cookie(data: dict, salt=None) -> str:
@@ -77,3 +79,35 @@ def get_user_session(cookie_names: list, salt: str, max_age: int) -> dict:
         cookie_data = validate_secure_cookie(cookie, salt=salt, max_age=max_age)
 
     return cookie_data
+
+
+def google_get_user_info(google_access_token) -> tuple:
+    """
+    Get user info from google
+    """
+    headers = {
+        "Accept": "application/json",
+        "Authorization": f"Bearer {google_access_token}",
+    }
+    resp = requests.get(
+        "https://www.googleapis.com/oauth2/v2/userinfo", headers=headers
+    )
+
+    if resp.status_code == 200:
+        resp_json = resp.json()
+        return resp_json, resp.status_code
+    else:
+        print("**** get_user_info failed ****")
+        print(resp.status_code)
+        print(resp.text)
+        return None, resp.status_code
+
+
+def base64_url_decode(input):
+    # Add padding characters if needed (length % 4 !== 0)
+    while len(input) % 4 != 0:
+        input += "="
+
+    base64_encoded = input.replace("-", "+").replace("_", "/")
+    base64_decoded = base64.b64decode(base64_encoded)
+    return base64_decoded.decode("utf-8")

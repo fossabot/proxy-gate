@@ -3,5 +3,6 @@ Flask-WTF
 flask
 flask_sqlalchemy
 gunicorn
+jsonschema
 pyyaml
 requests

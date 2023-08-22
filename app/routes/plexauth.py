@@ -97,7 +97,7 @@ def get_session():
         plex_client_id,
         plex_user_info,
         plex_resources,
-        domains=cookie_domains
+        domains=cookie_domains,
     )
     return response
 
