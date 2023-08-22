@@ -14,7 +14,7 @@ from ...utils import (
     plex_get_user_info,
 )
 
-blueprint = Blueprint(__name__.replace('.', '_'), __name__)
+blueprint = Blueprint(__name__.replace(".", "_"), __name__)
 
 
 @blueprint.route("/check")

@@ -1,8 +1,4 @@
-import os
-
-import pytest
-
-from app.utils import generate_secure_cookie, validate_secure_cookie
+from app.utils import generate_secure_cookie
 
 
 def test_check_401(app):

@@ -68,7 +68,7 @@ class Config:
         config = {}
         for env_var, value in os.environ.items():
             if env_var.startswith(env_prefix + "_"):
-                key = env_var[len(env_prefix) + 1 :].lower()
+                key = env_var[len(env_prefix) + 1:].lower()
                 if schema and key not in valid_properties:
                     continue
                 config[key] = value

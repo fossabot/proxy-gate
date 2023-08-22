@@ -6,13 +6,10 @@ from pathlib import Path
 
 import yaml
 from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
 from flask_wtf.csrf import CSRFProtect
 from werkzeug.middleware.proxy_fix import ProxyFix
+from .models import db
 
-from .config import ProxyGateConfig
-
-db = SQLAlchemy()
 csrf = CSRFProtect()
 
 
@@ -44,7 +41,9 @@ def add_routes(app):
                 getattr(route_module, "blueprint"), url_prefix="/" + route_url_prefix
             )
         else:
-            print(f"Skipping {route_url_prefix} at app.routes.{route} as it does not have a blueprint")
+            print(
+                f"Skipping {route_url_prefix} at app.routes.{route} as it does not have a blueprint"
+            )
 
     # app.register_blueprint(google.googleauth, url_prefix="/googleauth")
     # app.register_blueprint(login.login, url_prefix="/login")
@@ -66,8 +65,6 @@ def load_user_config(app):
 
 def database_setup(app):
     db.init_app(app)
-    from .models import RunTime, SecretKey
-
     db.create_all()
 
 
@@ -101,6 +98,10 @@ def get_routes():
     return walk_packages(Path(__file__).parent / "routes")
 
 
+def get_models():
+    return walk_packages(Path(__file__).parent / "models")
+
+
 def walk_packages(path: Path, prefix: str = ""):
     # Recursively find all modules under the specified package
     modules = []
@@ -110,5 +111,5 @@ def walk_packages(path: Path, prefix: str = ""):
             modules += walk_packages(loader.path + "/" + name, name + ".")
         else:
             modules.append(name)
-            
+
     return modules
