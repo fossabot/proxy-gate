@@ -67,20 +67,21 @@ function parseUserAgent() {
 
 function initializeHeaders() {
   const userAgent = parseUserAgent();
+  const appName = utils.proxyGateMetaz["app_name"]
   const headers = new Headers({
     Accept: "application/json",
     // "Content-Type": "application/json",
     "X-Plex-Client-Identifier": getPlexClientId(),
     "X-Plex-Device": userAgent.os.name || "Windows",
     "X-Plex-Device-Name":
-      userAgent.browser.name + " (PlexGate)" || "Unknown" + " (PlexGate)",
+      userAgent.browser.name + " " + appName || "Unknown" + " " + appName,
     "X-Plex-Device-Screen-Resolution":
       window.screen.width + "x" + window.screen.height,
     "X-Plex-Language": "en",
     "X-Plex-Model": "Plex OAuth",
     "X-Plex-Platform": userAgent.browser.name || "Unknown",
-    "X-Plex-Platform-Version": userAgent.browser.version || "0.1.0",
-    "X-Plex-Product": "PlexGate",
+    "X-Plex-Platform-Version": userAgent.browser.version || "0.0.0",
+    "X-Plex-Product": appName,
     "X-Plex-Version": "Plex OAuth",
   });
   return headers;
