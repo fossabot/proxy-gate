@@ -6,18 +6,18 @@ from urllib.parse import urlparse
 
 from flask import Blueprint, Response, make_response, request, session
 
-from ..exceptions import BadCookieSignature, CookieNotFound
-from ..utils import (
+from ...exceptions import BadCookieSignature, CookieNotFound
+from ...utils import (
     generate_secure_cookie,
     get_user_session,
     plex_get_plex_resources,
     plex_get_user_info,
 )
 
-plexauth = Blueprint("plexauth", __name__)
+blueprint = Blueprint(__name__.replace('.', '_'), __name__)
 
 
-@plexauth.route("/check")
+@blueprint.route("/check")
 def check():
     """
     Perform authentication and authorization checks given the conditions.
@@ -59,7 +59,7 @@ def check():
         return "access ok", 200
 
 
-@plexauth.route("/session")
+@blueprint.route("/session")
 def get_session():
     plex_auth_token = request.args.get("plexAuthToken")
     plex_client_id = request.args.get("plexClientId")
@@ -102,7 +102,7 @@ def get_session():
     return response
 
 
-@plexauth.route("/logout")
+@blueprint.route("/logout")
 def logout():
     # Clear the session and log out the user
     response = make_response("Logged out")

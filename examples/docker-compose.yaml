@@ -13,11 +13,11 @@ services:
       - ./nginx/site-confs/proxy-gate.conf:/config/nginx/site-confs/proxy-gate.conf:ro
       - ./nginx/site-confs/sample-plex-auth.conf:/config/nginx/site-confs/sample-plex-auth.conf:ro
       - ./nginx/site-confs/sample-google-auth.conf:/config/nginx/site-confs/sample-google-auth.conf:ro
+      - ./nginx/www/protected-index.html:/config/www/protected-index.html:ro
     ports:
       - 80:80
       - 443:443
       - 8080:8080 # proxy gate accessible via nginx
-      - 444:444
     restart: unless-stopped
 
   proxy-gate:

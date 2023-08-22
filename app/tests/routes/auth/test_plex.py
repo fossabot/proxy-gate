@@ -10,7 +10,7 @@ def test_check_401(app):
     Test the /check endpoint returns status code 401 when no cookie is present
     """
     client = app.test_client()
-    response = client.get("/plexauth/check")
+    response = client.get("/auth/plex/check")
     assert response.status_code == 401
 
 
@@ -24,7 +24,7 @@ def test_check_200(app):
         plexauth_cookie = generate_secure_cookie(plex_auth_cookie, salt="plexauth")
 
     client.set_cookie("_plexauth", plexauth_cookie)
-    response = client.get("/plexauth/check")
+    response = client.get("/auth/plex/check")
     assert response.status_code == 200
 
 
@@ -36,10 +36,10 @@ def test_check_with_plex_resource_id(app):
         plexauth_cookie = generate_secure_cookie(plex_auth_cookie, salt="plexauth")
 
     client.set_cookie("_plexauth", plexauth_cookie)
-    response = client.get("/plexauth/check?plexResourceClientId=a")
+    response = client.get("/auth/plex/check?plexResourceClientId=a")
     assert response.status_code == 200
 
-    response = client.get("/plexauth/check?plexResourceClientId=y")
+    response = client.get("/auth/plex/check?plexResourceClientId=y")
     assert response.status_code == 403
 
 
@@ -54,7 +54,7 @@ def test_check_with_user_2fa(app):
         plexauth_cookie = generate_secure_cookie(plex_auth_cookie, salt="plexauth")
 
     client.set_cookie("_plexauth", plexauth_cookie)
-    response = client.get("/plexauth/check?user2fa=True")
+    response = client.get("/auth/plex/check?user2fa=True")
     assert response.status_code == 200
 
     plex_auth_cookie = {
@@ -65,7 +65,7 @@ def test_check_with_user_2fa(app):
         plexauth_cookie = generate_secure_cookie(plex_auth_cookie, salt="plexauth")
 
     client.set_cookie("_plexauth", plexauth_cookie)
-    response = client.get("/plexauth/check?user2fa=True")
+    response = client.get("/auth/plex/check?user2fa=True")
     assert response.status_code == 403
 
 
@@ -80,10 +80,10 @@ def test_check_with_email_id(app):
         plexauth_cookie = generate_secure_cookie(plex_auth_cookie, salt="plexauth")
 
     client.set_cookie("_plexauth", plexauth_cookie)
-    response = client.get("/plexauth/check?emailIn=foo@example.com,fee@nono.com")
+    response = client.get("/auth/plex/check?emailIn=foo@example.com,fee@nono.com")
     assert response.status_code == 200
 
-    response = client.get("/plexauth/check?emailIn=goo@example.com,fee@nono.com")
+    response = client.get("/auth/plex/check?emailIn=goo@example.com,fee@nono.com")
     assert response.status_code == 403
 
 
@@ -91,14 +91,15 @@ def test_check_with_email_id(app):
     os.environ.get("PLEX_AUTH_TOKEN") is None,
     reason="PLEX_AUTH_TOKEN is not set, can't run this test",
 )
-def test_session_success(app):
+def test_session_success(app, metaz):
     """ """
 
     plex_auth_token = os.environ.get("PLEX_AUTH_TOKEN")
+    session_endpoint = metaz["plex_auth"]["session_endpoint"]
 
     client = app.test_client()
     response = client.get(
-        f"/plexauth/session?plexAuthToken={plex_auth_token}&plexClientId=1&redirect=http://foo.localhost:5000/"
+        f"{session_endpoint}?plexAuthToken={plex_auth_token}&plexClientId=1&redirect=http://foo.localhost:5000/"
     )
     assert response.status_code == 200
 
@@ -119,21 +120,22 @@ def test_session_success(app):
     assert "foo.localhost" in cookie_domains
 
 
-def test_session_fail(app):
+def test_session_fail(app, metaz):
     """ """
 
     plex_auth_token = "wrongvalue"
+    session_endpoint = metaz["plex_auth"]["session_endpoint"]
 
     client = app.test_client()
     response = client.get(
-        f"/plexauth/session?plexAuthToken={plex_auth_token}&plexClientId=33"
+        f"{session_endpoint}?plexAuthToken={plex_auth_token}&plexClientId=33"
     )
     assert response.status_code == 400
     assert response.text == "invalid token"
 
     assert len(client.cookie_jar) == 0
 
-    response = client.get("/plexauth/session")
+    response = client.get(session_endpoint)
     assert response.status_code == 400
     assert response.text == "invalid request"
 
@@ -152,7 +154,7 @@ def test_logout(app):
 
     assert len(client.cookie_jar) != 0
 
-    response = client.get("/plexauth/logout")
+    response = client.get("/auth/plex/logout")
     assert response.status_code == 200
 
     assert len(client.cookie_jar) == 0

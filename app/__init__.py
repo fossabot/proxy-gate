@@ -1,5 +1,7 @@
 """Initialize Flask app."""
+import importlib
 import os
+import pkgutil
 from pathlib import Path
 
 import yaml
@@ -31,12 +33,22 @@ def init_app():
 
 
 def add_routes(app):
-    from .routes import googleauth, login, metaz, plexauth
+    routes = get_routes()
 
-    app.register_blueprint(plexauth.plexauth, url_prefix="/plexauth")
-    app.register_blueprint(googleauth.googleauth, url_prefix="/googleauth")
-    app.register_blueprint(login.login, url_prefix="/login")
-    app.register_blueprint(metaz.metaz, url_prefix="/metaz")
+    for route in routes:
+        route_url_prefix = "/" + "/".join(route.split("."))
+        route_module = importlib.import_module("." + route, package="app.routes")
+        if hasattr(route_module, "blueprint"):
+            print(f"Registering {route_url_prefix} at {route}")
+            app.register_blueprint(
+                getattr(route_module, "blueprint"), url_prefix="/" + route_url_prefix
+            )
+        else:
+            print(f"Skipping {route_url_prefix} at app.routes.{route} as it does not have a blueprint")
+
+    # app.register_blueprint(google.googleauth, url_prefix="/googleauth")
+    # app.register_blueprint(login.login, url_prefix="/login")
+    # app.register_blueprint(metaz.metaz, url_prefix="/metaz")
 
 
 def load_user_config(app):
@@ -79,6 +91,24 @@ def get_session_secret_keys(db):
 
 
 def add_healthz_routes(app):
-    from .routes import healthz
+    # from .routes import healthz
 
-    app.register_blueprint(healthz.healthz, url_prefix="/healthz")
+    # app.register_blueprint(healthz.healthz, url_prefix="/healthz")
+    pass
+
+
+def get_routes():
+    return walk_packages(Path(__file__).parent / "routes")
+
+
+def walk_packages(path: Path, prefix: str = ""):
+    # Recursively find all modules under the specified package
+    modules = []
+    for loader, name, is_pkg in pkgutil.walk_packages([path], prefix=prefix):
+        if is_pkg:
+            print(f"Found package {name} at {loader.path} (will recurse)")
+            modules += walk_packages(loader.path + "/" + name, name + ".")
+        else:
+            modules.append(name)
+            
+    return modules

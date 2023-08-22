@@ -1,16 +1,19 @@
-from flask import Blueprint
+from flask import Blueprint, url_for
 
-metaz = Blueprint("metaz", __name__)
+blueprint = Blueprint(__name__.replace(".", "_"), __name__)
 
 
-@metaz.route("")
-@metaz.route("/")
+@blueprint.route("")
+@blueprint.route("/")
 def index():
     meta = {
         "version": "0.1.0",
-        "name": "Proxy Gate",
-        "googleAuth": {
-            "clientId": "1234",
+        "app_name": "Proxy Gate",
+        "google_auth": {
+            "session_endpoint": url_for("app_routes_auth_google.get_session"),
         },
+        "plex_auth": {
+            "session_endpoint": url_for("app_routes_auth_plex.get_session"),
+        }
     }
     return meta, 200

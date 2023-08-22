@@ -67,20 +67,21 @@ function parseUserAgent() {
 
 function initializeHeaders() {
   const userAgent = parseUserAgent();
+  const appName = utils.proxyGateMetaz["app_name"]
   const headers = new Headers({
     Accept: "application/json",
     // "Content-Type": "application/json",
     "X-Plex-Client-Identifier": getPlexClientId(),
     "X-Plex-Device": userAgent.os.name || "Windows",
     "X-Plex-Device-Name":
-      userAgent.browser.name + " (PlexGate)" || "Unknown" + " (PlexGate)",
+      userAgent.browser.name + " " + appName || "Unknown" + " " + appName,
     "X-Plex-Device-Screen-Resolution":
       window.screen.width + "x" + window.screen.height,
     "X-Plex-Language": "en",
     "X-Plex-Model": "Plex OAuth",
     "X-Plex-Platform": userAgent.browser.name || "Unknown",
-    "X-Plex-Platform-Version": userAgent.browser.version || "0.1.0",
-    "X-Plex-Product": "PlexGate",
+    "X-Plex-Platform-Version": userAgent.browser.version || "0.0.0",
+    "X-Plex-Product": appName,
     "X-Plex-Version": "Plex OAuth",
   });
   return headers;
@@ -115,33 +116,6 @@ function getPlexClientId() {
   }
   return plexClientId;
 }
-
-// async function getPlexPins() {
-//   const apiUrl = "https://plex.tv/api/v2/pins?strong=true";
-
-//   // Set up the headers for the API call
-//   const headers = initializeHeaders();
-
-//   try {
-//     // Make the API call using fetch()
-//     const response = await fetch(apiUrl, {
-//       method: "POST",
-//       headers: headers,
-//     });
-
-//     // Check if the response was successful (status code 200-299)
-//     if (!response.ok) {
-//       throw new Error("Network response was not ok");
-//     }
-
-//     // Parse the response as JSON and return the data
-//     const jsonData = await response.json();
-//     return jsonData;
-//   } catch (error) {
-//     console.error("Error fetching data:", error);
-//     return null; // or throw the error to handle it in the calling code
-//   }
-// }
 
 async function getPlexPins() {
   try {
@@ -215,7 +189,7 @@ async function getProxyGateSession(
   redirectUrlEncode
 ) {
   const { protocol, host } = window.location;
-  const apiUrl = `${protocol}//${host}/plexauth/session?plexAuthToken=${plexAuthToken}&plexClientId=${plexClientId}&redirect=${redirectUrlEncode}`;
+  const apiUrl = `${protocol}//${host}${utils.proxyGateMetaz["plex_auth"]["session_endpoint"]}?plexAuthToken=${plexAuthToken}&plexClientId=${plexClientId}&redirect=${redirectUrlEncode}`;
   try {
     // Make the API call using fetch()
     const response = await fetch(apiUrl, {
@@ -224,7 +198,7 @@ async function getProxyGateSession(
 
     // Check if the response was successful (status code 200-299)
     if (!response.ok) {
-      throw new Error("PRoxy Gate get session response was not ok");
+      throw new Error("Proxy Gate get session response was not ok");
     }
 
     return true;

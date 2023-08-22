@@ -1,11 +1,11 @@
 from flask import Blueprint, abort, request, send_from_directory, make_response
 
-login = Blueprint("login", __name__)
+blueprint = Blueprint(__name__.replace(".", "_"), __name__)
 
 
-@login.route("", defaults={"path": "index.html"})
-@login.route("/", defaults={"path": "index.html"})
-@login.route("/<path:path>")
+@blueprint.route("", defaults={"path": "index.html"})
+@blueprint.route("/", defaults={"path": "index.html"})
+@blueprint.route("/<path:path>")
 def login_page(path):
     if path == "index.html":
         workflow = _check_workflow_step(request.args.get("workflowStep", "start"))
