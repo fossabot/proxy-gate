@@ -111,7 +111,7 @@ async function getProxyGateSession(
   redirectParamBase64Encoded
 ) {
   const { protocol, host } = window.location;
-  const apiUrl = `${protocol}//${host}/googleauth/session?googleAccessToken=${accessToken}&redirect=${redirectParamBase64Encoded}`;
+  const apiUrl = `${protocol}//${host}${utils.proxyGateMetaz["google_auth"]["session_endpoint"]}?googleAccessToken=${accessToken}&redirect=${redirectParamBase64Encoded}`;
   try {
     // Make the API call using fetch()
     const response = await fetch(apiUrl, {

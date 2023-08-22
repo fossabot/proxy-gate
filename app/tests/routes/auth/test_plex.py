@@ -91,14 +91,15 @@ def test_check_with_email_id(app):
     os.environ.get("PLEX_AUTH_TOKEN") is None,
     reason="PLEX_AUTH_TOKEN is not set, can't run this test",
 )
-def test_session_success(app):
+def test_session_success(app, metaz):
     """ """
 
     plex_auth_token = os.environ.get("PLEX_AUTH_TOKEN")
+    session_endpoint = metaz["plex_auth"]["session_endpoint"]
 
     client = app.test_client()
     response = client.get(
-        f"/auth/plex/session?plexAuthToken={plex_auth_token}&plexClientId=1&redirect=http://foo.localhost:5000/"
+        f"{session_endpoint}?plexAuthToken={plex_auth_token}&plexClientId=1&redirect=http://foo.localhost:5000/"
     )
     assert response.status_code == 200
 
@@ -119,21 +120,22 @@ def test_session_success(app):
     assert "foo.localhost" in cookie_domains
 
 
-def test_session_fail(app):
+def test_session_fail(app, metaz):
     """ """
 
     plex_auth_token = "wrongvalue"
+    session_endpoint = metaz["plex_auth"]["session_endpoint"]
 
     client = app.test_client()
     response = client.get(
-        f"/auth/plex/session?plexAuthToken={plex_auth_token}&plexClientId=33"
+        f"{session_endpoint}?plexAuthToken={plex_auth_token}&plexClientId=33"
     )
     assert response.status_code == 400
     assert response.text == "invalid token"
 
     assert len(client.cookie_jar) == 0
 
-    response = client.get("/auth/plex/session")
+    response = client.get(session_endpoint)
     assert response.status_code == 400
     assert response.text == "invalid request"
 
