@@ -33,3 +33,4 @@ def set_test_environment():
         "FLASK_SQLALCHEMY_DATABASE_URI"
     ] = f'sqlite:///{os.environ["PROXY_GATE_DATA_DIR"]}/app.db'
     os.environ["FLASK_SQLALCHEMY_TRACK_MODIFICATIONS"] = "False"
+    os.environ["PROXY_GATE_VERSION"] = "pytest-0.0.0"
