@@ -6,7 +6,7 @@ import json
 import pytest
 import yaml
 
-from app.config import Config
+from app.config import Config, ConfigHandler
 
 
 class TestConfig:
@@ -29,9 +29,11 @@ class TestConfig:
 
     def test_config_init(self, mock_config_files, monkeypatch):
         monkeypatch.setenv("TESTAPP_KEY1", "value1")
-        monkeypatch.setattr(Config, "validate_config", lambda *args: None, raising=True)
         monkeypatch.setattr(
-            Config, "load_from_defaults", lambda *args: {}, raising=True
+            ConfigHandler, "validate_config", lambda *args: None, raising=True
+        )
+        monkeypatch.setattr(
+            ConfigHandler, "load_from_defaults", lambda *args: {}, raising=True
         )
         config = Config(
             config_file_name="test-app-config.yaml",

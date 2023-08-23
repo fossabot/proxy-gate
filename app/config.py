@@ -1,3 +1,4 @@
+# pylint: disable=too-few-public-methods
 import json
 import os
 from pathlib import Path
@@ -15,36 +16,7 @@ class ConfigSingletonMeta(type):
         return cls._instances[cls]
 
 
-class Config:
-    """
-    Provides an interface to configuration handling in order of precedence:
-    1. Environment variables
-    2. Config files in the order they are provided
-    3. Defaults
-    """
-
-    def __init__(
-        self,
-        config_file_name,
-        config_dirs,
-        env_prefix,
-        schema_name=None,
-    ):
-        self.config = {}
-        if schema_name:
-            schema = load_json(get_schema_file_path(schema_name))
-        else:
-            schema = None
-
-        config_files = Config.set_config_files(config_dirs, config_file_name)
-        env_config = Config.load_from_env(env_prefix, schema=schema)
-        file_config = Config.load_from_config_files(config_files)
-        default_config = Config.load_from_defaults(schema_name)
-        Config.validate_config(env_config, file_config, default_config, schema_name)
-        self.config.update(default_config)
-        self.config.update(file_config)
-        self.config.update(env_config)
-
+class ConfigHandler:
     @staticmethod
     def set_config_files(config_dirs, config_file_name) -> list:
         config_files = []
@@ -112,7 +84,8 @@ class Config:
             except Exception as ex:
                 raise ValueError(f"Error while validating {config_type} config") from ex
 
-    def time_duration_to_seconds(self, time_string):
+    @staticmethod
+    def time_duration_to_seconds(time_string):
         if time_string[-1] == "d":
             return int(time_string[:-1]) * 86400
         if time_string[-1] == "h":
@@ -123,6 +96,39 @@ class Config:
             return int(time_string[:-1]) * 7 * 86400
 
         return int(time_string)
+
+
+class Config:
+    """
+    Provides an interface to configuration handling in order of precedence:
+    1. Environment variables
+    2. Config files in the order they are provided
+    3. Defaults
+    """
+
+    def __init__(
+        self,
+        config_file_name,
+        config_dirs,
+        env_prefix,
+        schema_name=None,
+    ):
+        self.config = {}
+        if schema_name:
+            schema = load_json(get_schema_file_path(schema_name))
+        else:
+            schema = None
+
+        config_files = ConfigHandler.set_config_files(config_dirs, config_file_name)
+        env_config = ConfigHandler.load_from_env(env_prefix, schema=schema)
+        file_config = ConfigHandler.load_from_config_files(config_files)
+        default_config = ConfigHandler.load_from_defaults(schema_name)
+        ConfigHandler.validate_config(
+            env_config, file_config, default_config, schema_name
+        )
+        self.config.update(default_config)
+        self.config.update(file_config)
+        self.config.update(env_config)
 
     def get(self, key):
         return self.config.get(key)
@@ -145,7 +151,9 @@ class ProxyGateConfig(Config, metaclass=ConfigSingletonMeta):
         )
 
         for _key in ["secret_key_validity", "secret_key_interim_validity"]:
-            self.config[_key] = self.time_duration_to_seconds(self.config[_key])
+            self.config[_key] = ConfigHandler.time_duration_to_seconds(
+                self.config[_key]
+            )
 
 
 def load_json(json_file: Path):
