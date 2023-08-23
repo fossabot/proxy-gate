@@ -14,6 +14,6 @@ def index():
         },
         "plex_auth": {
             "session_endpoint": url_for("app_routes_auth_plex.get_session"),
-        }
+        },
     }
     return meta, 200

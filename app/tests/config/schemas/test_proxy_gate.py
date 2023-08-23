@@ -1,3 +1,4 @@
+# pylint: disable=too-few-public-methods
 import jsonschema
 import pytest
 
@@ -24,7 +25,7 @@ class EnumTest:
     """
 
     property_name = None
-    valid_enum_values = None
+    valid_enum_values = []
     invalid_enum_values = None
 
     def test_enum_valid_values(self):
@@ -45,6 +46,10 @@ class EnumTest:
 
 
 class TypeTest:
+    property_name = None
+    valid_type_value = None
+    invalid_type_value = None
+
     def test_type_valid(self):
         test_config = {self.property_name: self.valid_type_value}
         config.validate_json(
@@ -62,6 +67,10 @@ class TypeTest:
 
 
 class MinItemsTest:
+    property_name = None
+    valid_min_items = None
+    invalid_min_items = None
+
     def test_min_items_valid(self):
         test_config = {self.property_name: self.valid_min_items}
         config.validate_json(

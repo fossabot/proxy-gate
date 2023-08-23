@@ -15,7 +15,6 @@ def test_check_401(app):
 
 
 def test_check_200(app):
-    """ """
     client = app.test_client()
     plex_auth_cookie = {
         "userauth": True,
@@ -29,7 +28,6 @@ def test_check_200(app):
 
 
 def test_check_with_plex_resource_id(app):
-    """ """
     client = app.test_client()
     plex_auth_cookie = {"userauth": True, "plex_resource_client_ids": ["a", "b", "c"]}
     with app.app_context():
@@ -44,7 +42,6 @@ def test_check_with_plex_resource_id(app):
 
 
 def test_check_with_user_2fa(app):
-    """ """
     client = app.test_client()
     plex_auth_cookie = {
         "userauth": True,
@@ -70,7 +67,6 @@ def test_check_with_user_2fa(app):
 
 
 def test_check_with_email_id(app):
-    """ """
     client = app.test_client()
     plex_auth_cookie = {
         "userauth": True,
@@ -92,7 +88,6 @@ def test_check_with_email_id(app):
     reason="PLEX_AUTH_TOKEN is not set, can't run this test",
 )
 def test_session_success(app, metaz):
-    """ """
 
     plex_auth_token = os.environ.get("PLEX_AUTH_TOKEN")
     session_endpoint = metaz["plex_auth"]["session_endpoint"]
@@ -121,7 +116,6 @@ def test_session_success(app, metaz):
 
 
 def test_session_fail(app, metaz):
-    """ """
 
     plex_auth_token = "wrongvalue"
     session_endpoint = metaz["plex_auth"]["session_endpoint"]
@@ -141,7 +135,6 @@ def test_session_fail(app, metaz):
 
 
 def test_logout(app):
-    """ """
     client = app.test_client()
     plex_auth_cookie = {
         "userauth": True,
