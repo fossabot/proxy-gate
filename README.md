@@ -11,6 +11,7 @@ It can act as a Single Sign-On (SSO) solution for multiple applications.
 ## Workflow
 
 ![enter image description here](./assets/proxy-gate-high-level-workflow.svg)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fdigimach%2Fproxy-gate.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fdigimach%2Fproxy-gate?ref=badge_shield)
 
 ## Auhentication and Authorization Workflow
 
@@ -67,3 +68,7 @@ Loaded from $PROXY_GATE_DATA_DIR/gunicorn.conf.py
 ### Proxy Gate (Coming Soon)
 
 Loaded from $PROXY_GATE_DATA_DIR/proxy-gate-config.py
+
+
+## License
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fdigimach%2Fproxy-gate.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fdigimach%2Fproxy-gate?ref=badge_large)
