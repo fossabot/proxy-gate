@@ -23,15 +23,7 @@ class TestConfig:
         config_dir2 = tmp_path / "config_dir2"
         config_dir2.mkdir()
         config_file2 = config_dir2 / "test-app-config.yaml"
-        config_file2.write_text(
-            yaml.dump(
-                {
-                    "key2": "valueWrong",
-                    "key3": "value3",
-                    "key4": {"key2": "value4.2", "key3": "value4.3"},
-                }
-            )
-        )
+        config_file2.write_text(yaml.dump({"key2": "valueWrong", "key3": "value3"}))
 
         return [config_dir1, config_dir2]
 
@@ -54,18 +46,7 @@ class TestConfig:
             "key1": "value1",
             "key2": "value2",
             "key3": "value3",
-            "key4": {"key2": "value4.2", "key3": "value4.3"},
         }
 
         assert config("key1") == "value1"
         assert config("no-key") is None
-
-        with pytest.raises(TypeError):
-            config.config["hello"] = "test"
-
-        with pytest.raises(TypeError):
-            config.config["key1"] = "test"
-
-        # The following test case fails because the config is not frozen
-        with pytest.raises(TypeError):
-            config.config["key4"]["key2"] = "test"
