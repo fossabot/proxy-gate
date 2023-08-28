@@ -1,4 +1,4 @@
-from app.config import ProxyGateConfig
+from app.config import ProxyGateConfig, ConfigHandler
 
 
 class TestProxyGate:
@@ -6,12 +6,12 @@ class TestProxyGate:
         proxy_gate = ProxyGateConfig()
         assert proxy_gate("allowed_auth_methods") == ["google", "plex"]
         assert proxy_gate("app_name") == "Proxy Gate"
-        assert proxy_gate("secret_key_validity") == proxy_gate.time_duration_to_seconds(
-            "3d"
-        )
+        assert proxy_gate(
+            "secret_key_validity"
+        ) == ConfigHandler.time_duration_to_seconds("3d")
         assert proxy_gate(
             "secret_key_interim_validity"
-        ) == proxy_gate.time_duration_to_seconds("7d")
+        ) == ConfigHandler.time_duration_to_seconds("7d")
 
     def test_same_class(self):
         proxy_gate1 = ProxyGateConfig()

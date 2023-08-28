@@ -1,0 +1,92 @@
+name: Proxy Gate CI
+
+on:
+  pull_request:
+    branches:
+      - main 
+
+  push:
+    branches:
+      - main
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-20.04
+    container: python:3.11
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Install dependencies
+        run: pip install -r requirements-lint.txt
+      - name: Lint
+        run: make lint
+
+  test:
+    name: Test
+    runs-on: ubuntu-20.04
+    container: python:3.11
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      - name: Pytest
+        run: make pytest
+      - name: Run integration tests
+        run: make integration-test
+
+  build_and_push:
+    name: Build & Publish Docker Images
+    if: github.ref == 'refs/heads/develop' && !contains(github.event.head_commit.message, '[skip ci]')
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: APP_VERSION from tag builds
+        if: github.ref_type == 'tag'
+        run: |
+          echo 'APP_VERSION=${{ github.ref_name }}' >> "$GITHUB_ENV"
+          echo 'IMAGE_TAG=${{ github.ref_name }}' >> "$GITHUB_ENV"
+          echo 'IMAGE_PUSH=true' >> "$GITHUB_ENV"
+
+      - name: APP_VERSION from branch builds
+        if: github.ref_type == 'branch' && github.event_name == 'push' && github.ref_name == 'main'
+        run: |
+          echo 'APP_VERSION=${{ github.ref_name }}' >> "$GITHUB_ENV"
+          echo 'IMAGE_TAG=develop' >> "$GITHUB_ENV"
+          echo 'IMAGE_PUSH=true' >> "$GITHUB_ENV"
+
+      - name: APP_VERSION from pr builds
+        if: github.event_name == 'pull_request'
+        run: |
+          echo 'APP_VERSION=pr-$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH")-${{ github.sha }}' >> "$GITHUB_ENV"
+          echo 'IMAGE_TAG=develop' >> "$GITHUB_ENV"
+          echo 'IMAGE_PUSH=false' >> "$GITHUB_ENV"
+
+      - name: Build and push
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          file: ./Dockerfile
+          platforms: linux/amd64,linux/arm64,linux/arm/v7
+          push: ${{ env.IMAGE_PUSH == 'true' }}
+          build-args: |
+            COMMIT_TAG=${{ github.sha }}
+            APP_VERSION=${{ env.APP_VERSION }}
+            IMAGE_REF_NAME=${{ github.ref_name }}
+          tags: |
+            ghcr.io/digimach/proxy-gate:${{ github.sha }}

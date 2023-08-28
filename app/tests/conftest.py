@@ -6,12 +6,12 @@ import pytest
 from app import init_app
 
 
-@pytest.fixture
-def app():
+@pytest.fixture(name="app")
+def app_fixture():
     set_test_environment()
-    app = init_app()
-    app.secret_key = ["test"]
-    yield app
+    flask_app = init_app()
+    flask_app.secret_key = ["test"]
+    yield flask_app
 
 
 @pytest.fixture
@@ -33,3 +33,4 @@ def set_test_environment():
         "FLASK_SQLALCHEMY_DATABASE_URI"
     ] = f'sqlite:///{os.environ["PROXY_GATE_DATA_DIR"]}/app.db'
     os.environ["FLASK_SQLALCHEMY_TRACK_MODIFICATIONS"] = "False"
+    os.environ["PROXY_GATE_VERSION"] = "pytest-0.0.0"

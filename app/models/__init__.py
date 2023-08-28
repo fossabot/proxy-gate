@@ -1,6 +1,8 @@
+# pylint: disable=too-few-public-methods
+from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.dialects.postgresql import JSON
 
-from . import db
+db = SQLAlchemy()
 
 
 class SecretKey(db.Model):

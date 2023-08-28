@@ -3,8 +3,8 @@ import time
 
 import pytest
 
-from app.exceptions import BadCookieSignature, CookieNotFound
-from app.utils import generate_secure_cookie, get_user_session, validate_secure_cookie
+from app.exceptions import BadCookieSignature
+from app.utils import generate_secure_cookie, validate_secure_cookie
 
 
 def test_generate_secure_cookie(app):

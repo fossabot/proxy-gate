@@ -1,3 +1,4 @@
+# pylint: disable=too-few-public-methods
 import json
 import os
 from pathlib import Path
@@ -15,36 +16,7 @@ class ConfigSingletonMeta(type):
         return cls._instances[cls]
 
 
-class Config:
-    """
-    Provides an interface to configuration handling in order of precedence:
-    1. Environment variables
-    2. Config files in the order they are provided
-    3. Defaults
-    """
-
-    def __init__(
-        self,
-        config_file_name,
-        config_dirs,
-        env_prefix,
-        schema_name=None,
-    ):
-        self.config = {}
-        if schema_name:
-            schema = load_json(get_schema_file_path(schema_name))
-        else:
-            schema = None
-
-        config_files = Config.set_config_files(config_dirs, config_file_name)
-        env_config = Config.load_from_env(env_prefix, schema=schema)
-        file_config = Config.load_from_config_files(config_files)
-        default_config = Config.load_from_defaults(schema_name)
-        Config.validate_config(env_config, file_config, default_config, schema_name)
-        self.config.update(default_config)
-        self.config.update(file_config)
-        self.config.update(env_config)
-
+class ConfigHandler:
     @staticmethod
     def set_config_files(config_dirs, config_file_name) -> list:
         config_files = []
@@ -86,13 +58,11 @@ class Config:
         data = {}
         config_files.reverse()
         for config_file in config_files:
-            x = Path("hello.json")
-            x.suffix
             if config_file.suffix == ".json":
-                with open(config_file, "r") as file:
+                with open(config_file, "r", encoding="utf-8") as file:
                     config_file_data = json.load(file)
             elif config_file.suffix == ".yaml":
-                with open(config_file, "r") as file:
+                with open(config_file, "r", encoding="utf-8") as file:
                     config_file_data = yaml.safe_load(file)
             else:
                 raise ValueError(f"Unknown config file type {config_file}")
@@ -112,19 +82,53 @@ class Config:
             try:
                 validate_json(config, get_schema_file_path(schema_name))
             except Exception as ex:
-                raise Exception(f"Error while validating {config_type} config") from ex
+                raise ValueError(f"Error while validating {config_type} config") from ex
 
-    def time_duration_to_seconds(self, time_string):
+    @staticmethod
+    def time_duration_to_seconds(time_string):
         if time_string[-1] == "d":
             return int(time_string[:-1]) * 86400
-        elif time_string[-1] == "h":
+        if time_string[-1] == "h":
             return int(time_string[:-1]) * 3600
-        elif time_string[-1] == "m":
+        if time_string[-1] == "m":
             return int(time_string[:-1]) * 60
-        elif time_string[-1] == "w":
+        if time_string[-1] == "w":
             return int(time_string[:-1]) * 7 * 86400
+
+        return int(time_string)
+
+
+class Config:
+    """
+    Provides an interface to configuration handling in order of precedence:
+    1. Environment variables
+    2. Config files in the order they are provided
+    3. Defaults
+    """
+
+    def __init__(
+        self,
+        config_file_name,
+        config_dirs,
+        env_prefix,
+        schema_name=None,
+    ):
+        self.config = {}
+        if schema_name:
+            schema = load_json(get_schema_file_path(schema_name))
         else:
-            return int(time_string)
+            schema = None
+
+        config_files = ConfigHandler.set_config_files(config_dirs, config_file_name)
+        env_config = ConfigHandler.load_from_env(env_prefix, schema=schema)
+        file_config = ConfigHandler.load_from_config_files(config_files)
+        default_config = ConfigHandler.load_from_defaults(schema_name)
+        ConfigHandler.validate_config(
+            env_config, file_config, default_config, schema_name
+        )
+        self.config.update(default_config)
+        self.config.update(file_config)
+        self.config.update(env_config)
 
     def get(self, key):
         return self.config.get(key)
@@ -147,23 +151,25 @@ class ProxyGateConfig(Config, metaclass=ConfigSingletonMeta):
         )
 
         for _key in ["secret_key_validity", "secret_key_interim_validity"]:
-            self.config[_key] = self.time_duration_to_seconds(self.config[_key])
+            self.config[_key] = ConfigHandler.time_duration_to_seconds(
+                self.config[_key]
+            )
 
 
 def load_json(json_file: Path):
-    with open(json_file, "r") as fp:
-        json_data = json.load(fp)
+    with open(json_file, "r", encoding="utf-8") as file_pointer:
+        json_data = json.load(file_pointer)
     return json_data
 
 
 def validate_json(json_data: dict, schema_file: Path):
+    """
+    Raises: jsonschema.exceptions.ValidationError if validation fails
+    """
     schema = load_json(schema_file)
 
-    try:
-        jsonschema.validate(json_data, schema)
-        return True
-    except jsonschema.exceptions.ValidationError:
-        raise
+    jsonschema.validate(json_data, schema)
+    return True
 
 
 def get_schema_file_path(
@@ -173,17 +179,17 @@ def get_schema_file_path(
     schema_file_path = schema_dir / schema_file_name
     if schema_file_path.exists():
         return schema_file_path
-    else:
-        raise FileNotFoundError(f"Schema file {schema_file_path} not found")
+
+    raise FileNotFoundError(f"Schema file {schema_file_path} not found")
 
 
 def init_default_set_validator(validator_class=jsonschema.Draft202012Validator):
     validate_properties = validator_class.VALIDATORS["properties"]
 
     def set_defaults(validator, properties, instance, schema):
-        for property, subschema in properties.items():
+        for _property, subschema in properties.items():
             if "default" in subschema:
-                instance.setdefault(property, subschema["default"])
+                instance.setdefault(_property, subschema["default"])
 
         for error in validate_properties(
             validator,

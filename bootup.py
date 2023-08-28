@@ -11,10 +11,12 @@ from flask_migrate import Migrate, init, migrate, upgrade
 from sqlalchemy import and_
 
 from app.config import ProxyGateConfig
-from app.exceptions import GoogleClientSecretFileNotFound
-from app.models import RunTime, SecretKey
-from app.utils import google_oauth_flow
-from wsgi import app, db
+
+# from app.exceptions import GoogleClientSecretFileNotFound
+from app.models import db, RunTime, SecretKey
+
+# from app.utils import google_oauth_flow
+from wsgi import app
 
 
 def secret_key_setup():
@@ -91,11 +93,11 @@ def runtime_data_setup():
     """
     db.session.query(RunTime).delete()
     db.session.add(RunTime(key="boot_time", value=datetime.now().isoformat()))
-    try:
-        google_credentials = google_oauth_flow.init_flow_credentials()
-        db.session.add(RunTime(key="google_credentials", value=google_credentials))
-    except GoogleClientSecretFileNotFound:
-        print("** Google client secret file not found")
+    # try:
+    #     google_credentials = google_oauth_flow.init_flow_credentials()
+    #     db.session.add(RunTime(key="google_credentials", value=google_credentials))
+    # except GoogleClientSecretFileNotFound:
+    #     print("** Google client secret file not found")
     db.session.commit()
 
 
