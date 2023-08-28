@@ -39,6 +39,9 @@ jobs:
 
   build_and_push:
     name: Build & Publish Docker Images
+    needs:
+      - lint
+      - test
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout
