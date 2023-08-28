@@ -6,7 +6,7 @@ on:
       - '*'
   push:
     branches:
-      - dev-v*
+      - main
 
 jobs:
   lint:
@@ -34,6 +34,8 @@ jobs:
         uses: docker/setup-buildx-action@v2
       - name: Pytest
         run: make pytest
+      - name: Run integration tests
+        run: make integration-test
 
   build_and_push:
     name: Build & Publish Docker Images
