@@ -18,14 +18,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Install dependencies
-        run: pip install -r requirements-lint.txt
+        run: pip install -r requirements-lint.txt -r requirements-test.txt -r requirements.txt
       - name: Lint
         run: make lint
 
   test:
     name: Test
     runs-on: ubuntu-20.04
-    container: python:3.11
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -35,12 +34,18 @@ jobs:
         uses: docker/setup-buildx-action@v2
       - name: Pytest
         run: make pytest
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v3
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
       - name: Run integration tests
         run: make integration-test
 
   build_and_push:
     name: Build & Publish Docker Images
-    if: github.ref == 'refs/heads/develop' && !contains(github.event.head_commit.message, '[skip ci]')
+    needs:
+      - lint
+      - test
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout
