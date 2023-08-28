@@ -88,7 +88,6 @@ def test_check_with_email_id(app):
     reason="PLEX_AUTH_TOKEN is not set, can't run this test",
 )
 def test_session_success(app, metaz):
-
     plex_auth_token = os.environ.get("PLEX_AUTH_TOKEN")
     session_endpoint = metaz["plex_auth"]["session_endpoint"]
 
@@ -116,7 +115,6 @@ def test_session_success(app, metaz):
 
 
 def test_session_fail(app, metaz):
-
     plex_auth_token = "wrongvalue"
     session_endpoint = metaz["plex_auth"]["session_endpoint"]
 
